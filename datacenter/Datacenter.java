@@ -22,14 +22,15 @@ public class Datacenter {
 
     public void setHostList(List<Host> hostlist){
         this.hostList = hostlist;
-    }
-
-
+   }
+    
     public void firstAllocate(final List<Vm> vmlist) {
         for (Vm vm: vmlist) {
             Host h = checkAllocateVmToHost(vm);
             h.vmAllocate(vm);
             vm.setHost(h);
+            System.out.printf("allocate %s to %s\n", vm, h);
+            System.out.println(vm.getmipsCapacity());
         }
     }
 
@@ -50,7 +51,7 @@ public class Datacenter {
     //firstfit
     private Host checkAllocateVmToHost(Vm vm) {
         for ( Host h: this.hostList ) {
-            if (h.getInActivePes() >= vm.getPes() && h.getHostUtilization() < 90 ){
+            if (h.getInActivePes() >= vm.getPes() && h.nowHostUtilization() < 90 ){
                 return h;
             }
         }

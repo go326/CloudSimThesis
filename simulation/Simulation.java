@@ -46,15 +46,15 @@ public class Simulation {
 
 
             if( 100 < simTime  &&  simTime <= 101) {
-//                dc.migration(vmList.get(1), hostList.get(3));
+//                dc.migration(vmList.get(1), hostList.get(1));
+                //
+                hostList.get(3).powerOff();
             }
             
             //1さいくるの終了判定
             if(checkFinish()) break;
         }
     }
-
-
 
     /** simulationの終了を確認する
         すべてのcloudletの、jobの長さが０になったら終了

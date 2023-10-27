@@ -39,8 +39,7 @@ public class AllocationPolicy {
         return false;
     }
 
-    
-    private void allocateVmToHost(Vm vm, Host host){
-        host.vmAllocateToHost(vm);
-    }
+    //.    private void allocateVmToHost(Vm vm, Host host){
+    //  host.vmAllocateToHost(vm);
+//    }
 }

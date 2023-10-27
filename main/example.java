@@ -15,12 +15,12 @@ public class example {
     private List<Vm> VmList;  //= new ArrayList<Host>();
     private List<Cloudlet> CloudletList;
 
-    private int HOSTS = 4;
+    private int HOSTS = 2;
 
-    private int HOST_PES = 10;
+    private int HOST_PES = 5;
     private int PE_MIPS = 400;// * 1024 * 1024;
     
-    private int VMS = 4;
+    private int VMS = 1;
     
     private int VM_PES = 4;
     private int VM_MIPS = 400;
@@ -38,7 +38,8 @@ public class example {
         dc = new Datacenter(sim);
         //hostの作成
         this.HostList = createHosts();
-        this.VmList = createVmsAndCloudlets();
+        //    this.VmList = createVmsAndCloudlets();
+        this.VmList = createAvailabilityVmsAndCloudlets();
 
         dc.setHostList(HostList);
         
@@ -74,8 +75,28 @@ public class example {
         }
         return vmlist;
     }
-    
 
+    private List<Vm> createAvailabilityVmsAndCloudlets() {
+        List<Vm> vmlist = new ArrayList<>();
+        Vm vm1, vm2;
+        Cloudlet cl1, cl2;
+        for (int i = 0; i <VMS; i++){
+            vm1 = new Vm(VM_MIPS, VM_PES);
+            vm2 = new Vm(VM_MIPS, VM_PES);
+            vm1.setPertnerVm(vm2);
+            vm2.setPertnerVm(vm1);
+            vmlist.add(vm1);
+            vmlist.add(vm2);
+            cl1 = new Cloudlet(CLOUDLET_LENGTH);
+            cl2 = new Cloudlet(CLOUDLET_LENGTH);
+            cl1.setVm(vm1);
+            cl2.setVm(vm2);
+            cl1.setUtilizationModel(new UtilizationModel(i));
+            cl2.setUtilizationModel(new UtilizationModel(i));
+        }
+        return vmlist;
+    }
+    
     private List<Host> createHosts() {
         List<Host> hostlist = new ArrayList<>();
         for ( int i = 0; i < HOSTS; i++){

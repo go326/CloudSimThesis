@@ -8,8 +8,9 @@ public class Vm {
     private int mipsCapacity;
     private int pes;
     private Cloudlet cloudlet;
-    private Host allocatedHost;
+    private Host allocatedHost;     //配置しているホスト
     private int nowUtilizateMIPS;
+    private Vm pertnerVm = this;
 
     public Vm(final int mipsCapacity, final int pes) {
         this.mipsCapacity = mipsCapacity * pes;
@@ -28,7 +29,7 @@ public class Vm {
         double intervalCapa = (double)mipsCapacity * interval;
         this.nowUtilizateMIPS = (int)Math.round(intervalCapa * utilization);
         this.cloudlet.decLength(nowUtilizateMIPS);
-        this.allocatedHost.addAllocatedMips(nowUtilizateMIPS);
+//        this.allocatedHost.addAllocatedMips(nowUtilizateMIPS);
     }
 
         
@@ -53,11 +54,16 @@ public class Vm {
     }
 
     public int getmipsCapacity() {
-        return mipsCapacity*pes;
+        return mipsCapacity;
     }
 
     public int getNowUtilizateMIPS() {
         return nowUtilizateMIPS;
     }
+
+    public void setPertnerVm(final Vm vm) {
+        this.pertnerVm = vm;
+    }
+           
 }
 

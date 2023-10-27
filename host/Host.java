@@ -15,9 +15,9 @@ public class Host {
     private PowerModelHost powermodel;
     private boolean active;
 
-//    private int utilizationMips = 0; //今使用しているMPIS
+    private int capacityMips = 0;     //ホストが持ってるMIPS容量
     private int requestMips = 0;     //すべてのVMが占有しているMPIS
-    private int allocatedMips = 0;   //
+    private int utilizationMips = 0; //今使用しているMPIS
     
 
     private List<Vm> allocatedVmList = new ArrayList<Vm>();
@@ -27,44 +27,21 @@ public class Host {
         this.active = false;
         this.peList = pelist;
         peNum = peList.size();
-        this.allocatedMips = 0;
-        System.out.println("createHost::" + peNum + ", " + getHostMips() + ", " + allocatedMips);
+        peList.forEach(pe -> { this.capacityMips += pe.getmipsCapacity(); });
+        System.out.println("createHost::" + peNum + ", " + capacityMips + ", " + requestMips);
     }
 
-
-    public void addAllocatedMips(double mips) {
-        this.allocatedMips += mips;
-    }
-
-    public void resetAllocatedMips() {
-        this.allocatedMips = 0;
-    }
-
-    public double getallocatedMips() {
-        return (double) allocatedMips;
-    }
-
-    public double getHostUtilization() {
-        return ((double)allocatedMips / (double)getHostMips()) * 100;
-    }
 
     public void removeVm(Vm vm){
         vm.setHost(null);
     }
 
-    private int getHostMips() {
-        int mips = 0;
-        for (Pe p : peList) {
-            mips += p.getmipsCapacity();
-        }
-        return mips;
-    }
-
     /** 今のhostの使用率(0~1)を返す
-     **/
-    private double nowHostUtilization() {
+     **   配置されている vmのリストから，VMのMIPS使用率をとってきて，合計する
+    **/
+    public double nowHostUtilization() {
         int utilizationMips = nowHostUtilizationMIPS();
-        double utilization = (double)utilizationMips/(double)getHostMips();
+        double utilization = (double)utilizationMips/(double)capacityMips;
         return utilization;
     }
 
@@ -85,20 +62,18 @@ public class Host {
     }
 
     public void simCycle(double time) {
-        double aa = nowHostUtilization();
-        addStateHistoryEntry(time, allocatedMips, getHostMips(), active);
-        resetAllocatedMips();
+        addStateHistoryEntry(time);
     }
-    
-    //hostの情報を記録する
-    public void addStateHistoryEntry(
-        final double time,
-        final int allocatedMips,
-        final int requestedMips,
-        final boolean isActive) {
+     
+    //今のhostの情報を記録する
+    public void addStateHistoryEntry( final double time) {
 
         //新しい情報
-        final var newState = new HostStateHistoryEntry(time, allocatedMips, requestedMips, this.requestMips, isActive);
+        final var newState = new HostStateHistoryEntry(time,
+                                                       this.capacityMips,
+                                                       this.requestMips,
+                                                       nowHostUtilizationMIPS(),
+                                                       this.active);
 
         //初回の追加の場合
         if (this.stateHistory == null || !this.stateHistory.isEmpty()) {
@@ -132,7 +107,7 @@ public class Host {
     public void vmDeallocate(final Vm vm) {
         allocatedVmList.remove(allocatedVmList.indexOf(vm));
         activePe -= vm.getPes();
-        allocatedMips -= vm.getmipsCapacity();
+        requestMips -= vm.getmipsCapacity();
     }
     
     public int getInActivePes() {
