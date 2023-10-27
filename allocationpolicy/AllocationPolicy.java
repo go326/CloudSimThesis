@@ -1,4 +1,4 @@
-pakcage CloudSimThesis.allocationpolicy;
+package CloudSimThesis.allocationpolicy;
 
 import CloudSimThesis.host.*;
 import CloudSimThesis.vm.*;
@@ -12,7 +12,7 @@ public class AllocationPolicy {
 
     public AllocationPolicy (List<Host> hostlist, List<Vm> vmlist){
         this.hostList = hostlist;
-        this.vmLit = vmlist;
+        this.vmList = vmlist;
     }
 
 
@@ -25,17 +25,17 @@ public class AllocationPolicy {
     
 
     private boolean hostAleart (){
-        hostList.forEach( h -> {
-                double usagePercent = h.getHostUtilization();
+        // this.hostList.forEach(h -> {
+        //         double usagePercent = h.getHostUtilization();
 
-                if ( usagePercent > 90 ) {
-                    System.out.println("Aleart90 :: " + h);
-                    return true;
-                }else if( usagePercent < 35 ) {
-                    System.out.println("Aleart35 :: " + h);
-                }
+        //         if ( usagePercent > 90 ) {
+        //             System.out.println("Aleart90 :: " + h);
+        //             return true;
+        //         }else if( usagePercent < 35 ) {
+        //             System.out.println("Aleart35 :: " + h);
+        //         }
 
-            });
+//            });
         return false;
     }
 

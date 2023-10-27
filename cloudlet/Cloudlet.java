@@ -5,7 +5,7 @@ import CloudSimThesis.vm.*;
 public class Cloudlet {
 
     private int id;
-    private int length;
+    private double length;
     private UtilizationModel um;
     private Vm vm;
     private int remainingLength;
@@ -24,7 +24,7 @@ public class Cloudlet {
         vm.setCloudlet(this);
     }
 
-    public void decLength(int len){
+    public void decLength(double len){
         remainingLength -= len;
     }
     
@@ -40,7 +40,7 @@ public class Cloudlet {
         return um.getUtilization();
     }
 
-    public int getLength(){
+    public double getLength(){
         return length;
     }
 }

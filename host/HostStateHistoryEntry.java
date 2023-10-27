@@ -2,13 +2,17 @@ package CloudSimThesis.host;
 
 public record HostStateHistoryEntry(
     double time,
+    double utilizationMips,	
     double allocatedMips,
     double requestedMips,
     boolean active) {
+
+    //simulation時間
     public double time() {
         return time;
     }
 
+    //hostの初期配置
     public double allocatedMips() {
         return allocatedMips;
     }
@@ -26,7 +30,10 @@ public record HostStateHistoryEntry(
     }
 
     public String toString() {
-        final var msg = "%6.1f, %10.0f, %10.0f, %3.0f %s%n";
-        return msg.formatted(time, requestedMips, allocatedMips, percentUsage() * 100 , active);
+//        final var msg = "%6.1f s | %5.0f MIPS | %5.0f MIPS | %3.0f %% | %3.0f%% | %s";
+        final var msg = "%6.1f s | %5.0f MIPS | %5.0f MIPS | %3.0f %% | %s";
+        return msg.formatted(time, allocatedMips, requestedMips,
+                             percentUsage() * 100 , //utilizationPercent * 100,
+                             active);
     }
 }

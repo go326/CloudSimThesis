@@ -1,5 +1,6 @@
 package CloudSimThesis.main;
 
+import CloudSimThesis.datacenter.*;
 import CloudSimThesis.simulation.*;
 import CloudSimThesis.host.*;
 import CloudSimThesis.vm.*;
@@ -8,20 +9,21 @@ import CloudSimThesis.cloudlet.*;
 import java.util.*;
 
 public class example {
+    private Datacenter dc;
     private Simulation sim;
     private List<Host> HostList;  //= new ArrayList<Host>();
     private List<Vm> VmList;  //= new ArrayList<Host>();
     private List<Cloudlet> CloudletList;
 
-    private int HOSTS = 5;
+    private int HOSTS = 4;
 
     private int HOST_PES = 10;
-    private int PE_MIPS = 100;// * 1024 * 1024;
+    private int PE_MIPS = 400;// * 1024 * 1024;
     
     private int VMS = 4;
     
     private int VM_PES = 4;
-    private int VM_MIPS = 100;
+    private int VM_MIPS = 400;
 
     private int CLOUDLET_LENGTH = 80_000;//_000;
     
@@ -32,22 +34,34 @@ public class example {
     }
     
     private example() {
-        
+
+        dc = new Datacenter(sim);
         //hostの作成
         this.HostList = createHosts();
-        this.VmList = createVms();
+        this.VmList = createVmsAndCloudlets();
 
+        dc.setHostList(HostList);
+        
         System.out.println(HostList);
         System.out.println(VmList);
+        sim = new Simulation(dc, this.HostList, this.VmList);
 
-        sim = new Simulation(this.HostList, this.VmList);
         sim.start();
+
+        printHostState();
         
-        this.VmList.forEach(v -> { System.out.println(v + " :: " +v.getHost()); });
+        //this.VmList.forEach(v -> { System.out.println(v + " :: " +v.getHost()); });
     }
 
-
-    private List<Vm> createVms() {
+    private void printHostState() {
+        for (Host h: HostList) {
+            System.out.printf("%s History \n", h);
+            h.printStateHistoryEntry();
+        }
+        System.out.println();
+    }
+    
+    private List<Vm> createVmsAndCloudlets() {
         List<Vm> vmlist = new ArrayList<>();
         Vm vm;
         Cloudlet cl;
@@ -61,7 +75,7 @@ public class example {
         return vmlist;
     }
     
-    
+
     private List<Host> createHosts() {
         List<Host> hostlist = new ArrayList<>();
         for ( int i = 0; i < HOSTS; i++){

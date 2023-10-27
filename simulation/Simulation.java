@@ -1,5 +1,6 @@
 package CloudSimThesis.simulation;
 
+import CloudSimThesis.datacenter.*;
 import CloudSimThesis.host.*;
 import CloudSimThesis.vm.*;
 import CloudSimThesis.cloudlet.*;
@@ -9,70 +10,58 @@ import java.util.*;
 
 public class Simulation {
 
+    private Datacenter dc;
     private double simTime;
-    private double simlationInterval = 1;
+    private double simInterval = 1;
     
     private List<Host> hostList;
     private List<Vm> vmList;
 //    private AllocationPolicy policy;
     
     
-    public Simulation(final List<Host> hostlist, final List<Vm> vmlist) {
+    public Simulation(final Datacenter dc, final List<Host> hostlist, final List<Vm> vmlist) {
+        this.dc = dc;
+        simTime = 0;
         this.hostList = hostlist;
         this.vmList = vmlist;
         
     }
-
     public void start() {
+
+        //simlation start
+        //host powerOn
         hostList.forEach(h -> { h.powerOn(); });
-        for(Vm vm : vmList) {
-            Host h = checkAllocateVmToHost(vm);
-            h.vmAllocateToHost(vm);
-        }
-        while( true ) {
-            System.out.print(simTime + ":: VM ::");
-            for(Vm vm : vmList ) {
-                Cloudlet cl = vm.getCloudlet();
-                double utilizationMips = cl.getUtilization() * (double)vm.getmipsCapacity();
-                double capacity = vm.getmipsCapacity();
-                //System.out.print(String.format(", %3.0f %%", 100 * utilizationMips/capacity));
-                System.out.print(String.format(", %3.0f MIPS", utilizationMips));
-                cl.decLength((int)utilizationMips);
-                vm.getHost().addAllocatedMips((int)utilizationMips);
-                //System.out.print((double)cl.getremainingLength()/ (double)cl.getLength() + ", ");
+
+        // First allocation
+        dc.firstAllocate(vmList);
+
+        // simlationInterval の間隔でwhileをまわす
+        for ( ; ; simTime += simInterval ) {
+
+            //vmの使用率のupdate
+            vmList.forEach(vm -> { vm.simCycle(simTime, simInterval); } );
+
+            //hostの情報を表示
+            hostList.forEach(h -> { h.simCycle(simTime); } );
+
+
+            if( 100 < simTime  &&  simTime <= 101) {
+//                dc.migration(vmList.get(1), hostList.get(3));
             }
-            System.out.println();
-            System.out.print(simTime + "::HOST::");
-            for(Host h : hostList) {
-                //System.out.print(String.format(", %3.0f %%", h.getHostUtilization()));
-                System.out.print(String.format(", %3.0f MIPS", h.getallocatedMips()));
-                h.resetAllocatedMips();
-            }
-            System.out.println();
+            
             //1さいくるの終了判定
-//            if ( simTime > 2 ) break;
-            simTime += simlationInterval;
             if(checkFinish()) break;
         }
     }
 
-    //firstfit
-    private Host checkAllocateVmToHost(Vm vm) {
-        for ( Host h: this.hostList ) {
-            if (h.getInActivePes() > vm.getPes() && h.getHostUtilization() < 90 ){
-                return h;
-            }
-        }
 
-        System.out.println("配置するhostがない");
-        System.exit(0);
-        return null;
-    }
 
+    /** simulationの終了を確認する
+        すべてのcloudletの、jobの長さが０になったら終了
+     **/
     private boolean checkFinish() {
         for(Vm vm : vmList) {
             int length = vm.getCloudlet().getremainingLength();
-            //System.out.println(simTime + " , " + length);
             if( length <= 0 ) continue;
             return false;
         }
