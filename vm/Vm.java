@@ -8,18 +8,19 @@ public class Vm {
     private int mipsCapacity;
     private int pes;
     private Cloudlet cloudlet;
-    private Host allocatedHost;     //配置しているホスト
+    private Host allocatedHost = null;     //配置しているホスト
     private int nowUtilizateMIPS;
     private Vm pertnerVm = this;
 
     public Vm(final int mipsCapacity, final int pes) {
+        System.out.println(" create VMS");
         this.mipsCapacity = mipsCapacity * pes;
         this.pes = pes;
     }
 
     public void simCycle(double time, double interval) {
+        System.out.println(this);
         computeUsageMips(interval);
-        
     }
 
     private void computeUsageMips(double interval){

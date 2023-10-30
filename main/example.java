@@ -15,15 +15,15 @@ public class example {
     private List<Vm> VmList;  //= new ArrayList<Host>();
     private List<Cloudlet> CloudletList;
 
-    private int HOSTS = 2;
+    private int HOSTS = 5;
 
-    private int HOST_PES = 5;
+    private int HOST_PES = 10;
     private int PE_MIPS = 400;// * 1024 * 1024;
     
-    private int VMS = 1;
+    private int VMS = 3;
     
     private int VM_PES = 4;
-    private int VM_MIPS = 400;
+    private int VM_MIPS = 600;
 
     private int CLOUDLET_LENGTH = 80_000;//_000;
     
@@ -38,8 +38,8 @@ public class example {
         dc = new Datacenter(sim);
         //hostの作成
         this.HostList = createHosts();
-        //    this.VmList = createVmsAndCloudlets();
-        this.VmList = createAvailabilityVmsAndCloudlets();
+        this.VmList = createVmsAndCloudlets();
+        //this.VmList = createAvailabilityVmsAndCloudlets();
 
         dc.setHostList(HostList);
         

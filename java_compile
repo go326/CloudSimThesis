@@ -4,3 +4,4 @@ javac CloudSimThesis/vm/*.java
 javac CloudSimThesis/cloudlet/*.java
 javac CloudSimThesis/simulation/*.java
 javac CloudSimThesis/allocationpolicy/*.java
+javac CloudSimThesis/event/*.java

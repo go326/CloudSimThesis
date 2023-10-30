@@ -5,6 +5,7 @@ import CloudSimThesis.host.*;
 import CloudSimThesis.vm.*;
 import CloudSimThesis.cloudlet.*;
 //import CloudSimThesis.allocationpolicy.*;
+import CloudSimThesis.event.*;
 
 import java.util.*;
 
@@ -30,27 +31,29 @@ public class Simulation {
 
         //simlation start
         //host powerOn
-        hostList.forEach(h -> { h.powerOn(); });
+        hostList.forEach(h -> { dc.AddEventList(new PowerOnEvent(5, h)); });
 
         // First allocation
-        dc.firstAllocate(vmList);
 
         // simlationInterval の間隔でwhileをまわす
         for ( ; ; simTime += simInterval ) {
-
+            
+            dc.firstAllocate(vmList);
+            dc.checkEvent(simInterval);
+            System.out.printf("%3.1f :: ", simTime);
+            dc.checkAleart();
+            System.out.println(vmList);
             //vmの使用率のupdate
             vmList.forEach(vm -> { vm.simCycle(simTime, simInterval); } );
-
             //hostの情報を表示
             hostList.forEach(h -> { h.simCycle(simTime); } );
-
 
             if( 100 < simTime  &&  simTime <= 101) {
 //                dc.migration(vmList.get(1), hostList.get(1));
                 //
-                hostList.get(3).powerOff();
+//                hostList.get(3).powerOff();
             }
-            
+
             //1さいくるの終了判定
             if(checkFinish()) break;
         }

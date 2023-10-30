@@ -36,6 +36,21 @@ public class Host {
         vm.setHost(null);
     }
 
+    public Vm findVm(){
+        //使用率が最大のVMを渡す
+        double tmp = 0;
+        Vm target = allocatedVmList.get(0);
+        for(Vm vm: allocatedVmList) {
+            double util = vm.getCloudlet().getUtilization();
+            if(tmp < util) {
+                tmp = util;
+                target = vm;
+            }
+        }
+        return target;
+    }
+    
+
     /** 今のhostの使用率(0~1)を返す
      **   配置されている vmのリストから，VMのMIPS使用率をとってきて，合計する
     **/
@@ -83,9 +98,9 @@ public class Host {
                 return;
             }
         }
-        
         stateHistory.add(newState);
     }
+
 
     public void powerOn() {
         this.active = true;
@@ -99,6 +114,7 @@ public class Host {
 
     //vmを配置する
     public void vmAllocate(final Vm vm) {
+        System.out.printf("Allocate %s to %s", vm, this);
         allocatedVmList.add(vm);
         activePe += vm.getPes();
         requestMips += vm.getmipsCapacity();
